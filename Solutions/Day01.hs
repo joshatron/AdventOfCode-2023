@@ -6,63 +6,57 @@ module Solutions.Day01
 import Data.List (isPrefixOf, isSuffixOf)
 
 puzzle1 :: [String] -> String
-puzzle1 lines = show (addLines lines)
-
-addLines :: [String] -> Int
-addLines [] = 0
-addLines lines = lineValue (head lines) + (addLines (tail lines))
+puzzle1 = show . sum . map lineValue
 
 lineValue :: String -> Int
-lineValue line = read ([firstNum line] ++ [lastNum line])
+lineValue line = read [firstNum line, lastNum line]
 
 firstNum :: String -> Char
 firstNum [] = '0'
-firstNum line
-    | head line `elem` ['0'..'9'] = head line
-    | otherwise                   = firstNum (tail line)
+firstNum (c:cs)
+    | c `elem` ['0'..'9'] = c
+    | otherwise           = firstNum cs
 
 lastNum :: String -> Char
-lastNum line = firstNum (reverse line)
+lastNum = firstNum . reverse
+
 
 puzzle2 :: [String] -> String
-puzzle2 lines = show (addLinesComplex lines)
-
-addLinesComplex :: [String] -> Int
-addLinesComplex [] = 0
-addLinesComplex lines = lineValueComplex (head lines) + (addLinesComplex (tail lines))
+puzzle2 = show . sum . map lineValueComplex
 
 lineValueComplex :: String -> Int
-lineValueComplex line = read ([firstNumComplex line] ++ [lastNumComplex line])
+lineValueComplex line = read [firstNumComplex line, lastNumComplex line]
 
 firstNumComplex :: String -> Char
 firstNumComplex [] = '0'
-firstNumComplex line
-    | head line `elem` ['0'..'9'] = head line
-    | isPrefixOf "zero" line      = '0'
-    | isPrefixOf "one" line       = '1'
-    | isPrefixOf "two" line       = '2'
-    | isPrefixOf "three" line     = '3'
-    | isPrefixOf "four" line      = '4'
-    | isPrefixOf "five" line      = '5'
-    | isPrefixOf "six" line       = '6'
-    | isPrefixOf "seven" line     = '7'
-    | isPrefixOf "eight" line     = '8'
-    | isPrefixOf "nine" line      = '9'
-    | otherwise                   = firstNumComplex (tail line)
+firstNumComplex line@(c:cs)
+    | c `elem` ['0'..'9']       = c
+    | "zero" `isPrefixOf` line  = '0'
+    | "one" `isPrefixOf` line   = '1'
+    | "two" `isPrefixOf` line   = '2'
+    | "three" `isPrefixOf` line = '3'
+    | "four" `isPrefixOf` line  = '4'
+    | "five" `isPrefixOf` line  = '5'
+    | "six" `isPrefixOf` line   = '6'
+    | "seven" `isPrefixOf` line = '7'
+    | "eight" `isPrefixOf` line = '8'
+    | "nine" `isPrefixOf` line  = '9'
+    | otherwise                 = firstNumComplex cs
 
 lastNumComplex :: String -> Char
 lastNumComplex [] = '0'
 lastNumComplex line
-    | last line `elem` ['0'..'9'] = last line
-    | isSuffixOf "zero" line      = '0'
-    | isSuffixOf "one" line       = '1'
-    | isSuffixOf "two" line       = '2'
-    | isSuffixOf "three" line     = '3'
-    | isSuffixOf "four" line      = '4'
-    | isSuffixOf "five" line      = '5'
-    | isSuffixOf "six" line       = '6'
-    | isSuffixOf "seven" line     = '7'
-    | isSuffixOf "eight" line     = '8'
-    | isSuffixOf "nine" line      = '9'
-    | otherwise                   = lastNumComplex (init line)
+    | l `elem` ['0'..'9']       = l
+    | "zero" `isSuffixOf` line  = '0'
+    | "one" `isSuffixOf` line   = '1'
+    | "two" `isSuffixOf` line   = '2'
+    | "three" `isSuffixOf` line = '3'
+    | "four" `isSuffixOf` line  = '4'
+    | "five" `isSuffixOf` line  = '5'
+    | "six" `isSuffixOf` line   = '6'
+    | "seven" `isSuffixOf` line = '7'
+    | "eight" `isSuffixOf` line = '8'
+    | "nine" `isSuffixOf` line  = '9'
+    | otherwise                 = lastNumComplex $ init line
+    where l = last line
 
