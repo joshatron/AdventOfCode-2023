@@ -7,6 +7,7 @@ import Solutions.Day05
 import Solutions.Day06
 import Solutions.Day07
 import Solutions.Day08
+import Solutions.Day09
 
 
 main = do 
@@ -34,6 +35,9 @@ main = do
     day08Input <- readDay "08"
     putStrLn $ "Day 08 Puzzle 1: " ++ Solutions.Day08.puzzle1 day08Input ++ " (Verified: 17873)"
     putStrLn $ "Day 08 Puzzle 2: " ++ Solutions.Day08.puzzle2 day08Input ++ " (Verified: 15746133679061)"
+    day09Input <- readDay "09"
+    putStrLn $ "Day 09 Puzzle 1: " ++ Solutions.Day09.puzzle1 day09Input ++ " (Verified: 1581679977)"
+    putStrLn $ "Day 09 Puzzle 2: " ++ Solutions.Day09.puzzle2 day09Input ++ " (Verified: 889)"
 
 readDay :: String -> IO ([String])
 readDay day = do
