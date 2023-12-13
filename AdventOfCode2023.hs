@@ -52,7 +52,7 @@ main = do
     --putStrLn $ "Day 12 Puzzle 2: " ++ Solutions.Day12.puzzle2 day12Input ++ " (Verified: X)"
     day13Input <- readDay "13"
     putStrLn $ "Day 13 Puzzle 1: " ++ Solutions.Day13.puzzle1 day13Input ++ " (Verified: 30535)"
-    putStrLn $ "Day 13 Puzzle 2: " ++ Solutions.Day13.puzzle2 day13Input ++ " (Verified: >30592)"
+    putStrLn $ "Day 13 Puzzle 2: " ++ Solutions.Day13.puzzle2 day13Input ++ " (Verified: 30844)"
 
 readDay :: String -> IO ([String])
 readDay day = do
