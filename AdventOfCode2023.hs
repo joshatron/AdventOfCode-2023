@@ -12,6 +12,7 @@ import Solutions.Day11
 import Solutions.Day12
 import Solutions.Day13
 import Solutions.Day14
+import Solutions.Day15
 
 main :: IO ()
 main = do 
@@ -55,8 +56,11 @@ main = do
     putStrLn $ "Day 13 Puzzle 1: " ++ Solutions.Day13.puzzle1 day13Input ++ " (Verified: 30535)"
     putStrLn $ "Day 13 Puzzle 2: " ++ Solutions.Day13.puzzle2 day13Input ++ " (Verified: 30844)"
     day14Input <- readDay "14"
-    putStrLn $ "Day 14 Puzzle 1: " ++ Solutions.Day14.puzzle1 day14Input ++ " (Verified: X)"
-    putStrLn $ "Day 14 Puzzle 2: " ++ Solutions.Day14.puzzle2 day14Input ++ " (Verified: X)"
+    putStrLn $ "Day 14 Puzzle 1: " ++ Solutions.Day14.puzzle1 day14Input ++ " (Verified: 113456)"
+    --putStrLn $ "Day 14 Puzzle 2: " ++ Solutions.Day14.puzzle2 day14Input ++ " (Verified: X)"
+    day15Input <- readDay "15"
+    putStrLn $ "Day 15 Puzzle 1: " ++ Solutions.Day15.puzzle1 day15Input ++ " (Verified: 521434)"
+    putStrLn $ "Day 15 Puzzle 2: " ++ Solutions.Day15.puzzle2 day15Input ++ " (Verified: 248279)"
 
 readDay :: String -> IO ([String])
 readDay day = do
