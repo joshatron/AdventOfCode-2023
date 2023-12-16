@@ -4,99 +4,97 @@ module Solutions.Day14
 ) where
 
 import Data.List
+import Data.Maybe
 import Data.Function
 import qualified Data.Set as Set
 
 puzzle1 :: [String] -> String
-puzzle1 lines = show $ calculateLoad lines $ fst $ moveRocksInDirection lines (parseRoundRocks lines, parseSquareRocks lines) North
+puzzle1 lines = show . calculateLoad $ moveRocksInDirection (parsePlatform lines) North
 
-calculateLoad :: [String] -> [Point] -> Int
-calculateLoad lines points = sum $ map (calculateLoadRock lines) points
+calculateLoad :: Platform -> Int
+calculateLoad platform@(Platform _ _ r _) = sum $ map (calculateLoadRock platform) (Set.toList r)
 
-calculateLoadRock :: [String] -> Point -> Int
-calculateLoadRock lines point = (length lines) - (y point)
+calculateLoadRock :: Platform -> Point -> Int
+calculateLoadRock (Platform _ h _ _) (Point x y) = h - y
 
-moveRocksInDirection :: [String] -> ([Point],[Point]) -> Direction -> ([Point],[Point])
-moveRocksInDirection lines (round,square) dir = (foldl (\acc p -> (moveRockInDirection lines (acc,square) dir p):acc) [] (sortByDirection round dir), square)
+moveRocksInDirection :: Platform -> Direction -> Platform
+moveRocksInDirection platform@(Platform w h r s) dir = Platform w h (foldr (\p acc -> Set.insert (moveRockInDirection (Platform w h acc s) dir p) acc) Set.empty (sortByDirection platform dir)) s
 
-moveRockInDirection :: [String] -> ([Point],[Point]) -> Direction -> Point -> Point
-moveRockInDirection lines obstructions dir point
-    | isPointOutOfBounds lines toMove       = point
-    | isPointObstructed obstructions toMove = point
-    | otherwise                             = moveRockInDirection lines obstructions dir toMove
+moveRockInDirection :: Platform -> Direction -> Point -> Point
+moveRockInDirection platform dir point
+    | isPointValid platform toMove = moveRockInDirection platform dir toMove
+    | otherwise                    = point
     where toMove = movePointInDirection dir point
 
-sortByDirection :: [Point] -> Direction -> [Point]
-sortByDirection points North = sortBy (compare `on` y) points
-sortByDirection points South = sortBy (flip compare `on` y) points
-sortByDirection points East  = sortBy (flip compare `on` x) points
-sortByDirection points West  = sortBy (compare `on` x) points
+isPointValid :: Platform -> Point -> Bool
+isPointValid (Platform w h r s) point@(Point x y)
+    | x < 0                = False
+    | y < 0                = False
+    | x >= w               = False
+    | y >= h               = False
+    | point `Set.member` r = False
+    | point `Set.member` s = False
+    | otherwise            = True
 
-parseSquareRocks :: [String] -> [Point]
-parseSquareRocks lines = parseChar lines '#'
+movePointInDirection :: Direction -> Point -> Point
+movePointInDirection North (Point x y) = Point x (y-1)
+movePointInDirection South (Point x y) = Point x (y+1)
+movePointInDirection East (Point x y)  = Point (x+1) y
+movePointInDirection West (Point x y)  = Point (x-1) y
 
-parseRoundRocks :: [String] -> [Point]
-parseRoundRocks lines = parseChar lines 'O'
+sortByDirection :: Platform -> Direction -> [Point]
+sortByDirection (Platform _ _ points _) North = sortBy (flip compare `on` yLoc) (Set.toList points)
+sortByDirection (Platform _ _ points _) South = sortBy (compare `on` yLoc) (Set.toList points)
+sortByDirection (Platform _ _ points _) East  = sortBy (compare `on` xLoc) (Set.toList points)
+sortByDirection (Platform _ _ points _) West  = sortBy (flip compare `on` xLoc) (Set.toList points)
 
-parseChar :: [String] -> Char -> [Point]
-parseChar lines char = concat $ map (parseCharRow char) $ zip lines [0..]
+parsePlatform :: [String] -> Platform
+parsePlatform lines = Platform (length (head lines)) (length lines) (parseChar lines 'O') (parseChar lines '#')
+
+parseChar :: [String] -> Char -> Set.Set Point
+parseChar lines char = Set.fromList . concat . map (parseCharRow char) $ zip lines [0..]
 
 parseCharRow :: Char -> (String, Int) -> [Point]
 parseCharRow char (line, y) = map (\x -> Point x y) $ map snd $ filter (\(c,_) -> char == c) $ zip line [0..]
 
-isPointOutOfBounds :: [String] -> Point -> Bool
-isPointOutOfBounds lines point
-    | (x point) < 0                      = True
-    | (y point) < 0                      = True
-    | (x point) >= (length (head lines)) = True
-    | (y point) >= (length lines)        = True
-    | otherwise                          = False
+data Platform = Platform { width :: Int
+                         , height :: Int
+                         , round :: Set.Set Point
+                         , square :: Set.Set Point
+                         } deriving (Show, Eq)
 
-isPointObstructed :: ([Point],[Point]) -> Point -> Bool
-isPointObstructed (round,square) point = (point `elem` round) || (point `elem` square)
-
-movePointInDirection :: Direction -> Point -> Point
-movePointInDirection North point = Point (x point) ((y point)-1)
-movePointInDirection South point = Point (x point) ((y point)+1)
-movePointInDirection East point  = Point ((x point)+1) (y point)
-movePointInDirection West point  = Point ((x point)-1) (y point)
-
-data Point = Point { x :: Int
-                   , y :: Int
+data Point = Point { xLoc :: Int
+                   , yLoc :: Int
                    } deriving (Show, Eq, Ord)
 
 data Direction = North | South | East | West deriving (Show, Eq)
 
 puzzle2 :: [String] -> String
---puzzle2 lines = (toString $ (parseRoundRocks lines, parseSquareRocks lines)) ++ (toString $ moveRocksInDirection lines (parseRoundRocks lines, parseSquareRocks lines) North) ++ (toString $ moveRocksInDirection lines (moveRocksInDirection lines (parseRoundRocks lines, parseSquareRocks lines) North) West) ++ "\n" ++ (show $ sortByDirection (fst $ (moveRocksInDirection lines (parseRoundRocks lines, parseSquareRocks lines) North)) West) ++ "\n" ++ (show (fst $ moveRocksInDirection lines (moveRocksInDirection lines (parseRoundRocks lines, parseSquareRocks lines) North) West)) ++ "\n" ++ (toString $ moveRocksInDirection lines (moveRocksInDirection lines (moveRocksInDirection lines (parseRoundRocks lines, parseSquareRocks lines) North) West) South) ++ (toString $ runCycle lines (parseRoundRocks lines, parseSquareRocks lines))
---puzzle2 lines = toString $ runCycle lines $ runCycle lines $ runCycle lines (parseRoundRocks lines, parseSquareRocks lines)
-puzzle2 lines = show $ findCycle lines
+puzzle2 lines = show . calculateLoad $ (runInfiniteCycles platform)!!(numberOfIterations platform)
+    where platform = parsePlatform lines
 
-findCycle :: [String] -> Int
-findCycle lines = findMatch lines thousand thousand
-    where initial     = (parseRoundRocks lines, parseSquareRocks lines)
-          thousand = iterate (runCycle lines) initial !! 99999
+numberOfIterations :: Platform -> Int
+numberOfIterations platform = 100 + ((1000000000-100) `mod` (findCycle platform))
 
-findMatch :: [String] -> ([Point],[Point]) -> ([Point],[Point]) -> Int
-findMatch lines initial current
-    | Set.fromList (fst next) == Set.fromList (fst initial) = 0
-    | otherwise                                             = 1 + (findMatch lines initial next)
-    where next = runCycle lines current
+findCycle :: Platform -> Int
+findCycle platform = fst . fromJust $ find (\(n,p) -> p == first) $ zip [1..] (runInfiniteCycles (runOneCycle first))
+    where first = (runInfiniteCycles platform)!!100
 
-runCycle :: [String] -> ([Point],[Point]) -> ([Point],[Point])
-runCycle lines rocks = moveRocksInDirection lines (moveRocksInDirection lines (moveRocksInDirection lines (moveRocksInDirection lines rocks North) West) South) East
+runInfiniteCycles :: Platform -> [Platform]
+runInfiniteCycles platform = iterate runOneCycle platform
 
-toString :: ([Point],[Point]) -> String
-toString (round,square) = ['\n'] ++ (concat (map (toStringRow (round,square)) [0..(height)]))
-    where height = maximum ((map y round) ++ (map y square))
+runOneCycle :: Platform -> Platform
+runOneCycle platform = moveRocksInDirection (moveRocksInDirection (moveRocksInDirection (moveRocksInDirection platform North) West) South) East
 
-toStringRow :: ([Point],[Point]) -> Int -> String
-toStringRow (round,square) y =  (map (toStringLoc (round,square) y) [0..(width)]) ++ ['\n']
-    where width = maximum ((map x round) ++ (map x square))
+toString :: Platform -> String
+toString platform = ['\n'] ++ (concat (map (toStringRow platform) [0..((height platform)-1)]))
 
-toStringLoc :: ([Point],[Point]) -> Int -> Int -> Char
-toStringLoc (round,square) y x
-    | p `elem` round  = 'O'
-    | p `elem` square = '#'
-    | otherwise       = '.'
+toStringRow :: Platform -> Int -> String
+toStringRow platform y =  (map (toStringLoc platform y) [0..((width platform)-1)]) ++ ['\n']
+
+toStringLoc :: Platform -> Int -> Int -> Char
+toStringLoc (Platform w h r s) y x
+    | p `elem` r = 'O'
+    | p `elem` s = '#'
+    | otherwise  = '.'
     where p = Point x y
