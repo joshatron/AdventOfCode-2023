@@ -15,6 +15,8 @@ import Solutions.Day14
 import Solutions.Day15
 import Solutions.Day16
 import Solutions.Day17
+import Solutions.Day18
+import Solutions.Day19
 
 main :: IO ()
 main = do 
@@ -66,9 +68,15 @@ main = do
     day16Input <- readDay "16"
     putStrLn $ "Day 16 Puzzle 1: " ++ Solutions.Day16.puzzle1 day16Input ++ " (Verified: 7927)"
     --putStrLn $ "Day 16 Puzzle 2: " ++ Solutions.Day16.puzzle2 day16Input ++ " (Verified: 8246)"
-    day17Input <- readDay "17"
-    putStrLn $ "Day 17 Puzzle 1: " ++ Solutions.Day17.puzzle1 day17Input ++ " (Verified: X)"
-    putStrLn $ "Day 17 Puzzle 2: " ++ Solutions.Day17.puzzle2 day17Input ++ " (Verified: X)"
+    --day17Input <- readDay "17"
+    --putStrLn $ "Day 17 Puzzle 1: " ++ Solutions.Day17.puzzle1 day17Input ++ " (Verified: X)"
+    --putStrLn $ "Day 17 Puzzle 2: " ++ Solutions.Day17.puzzle2 day17Input ++ " (Verified: X)"
+    day18Input <- readDay "18"
+    putStrLn $ "Day 18 Puzzle 1: " ++ Solutions.Day18.puzzle1 day18Input ++ " (Verified: 50746)"
+    putStrLn $ "Day 18 Puzzle 2: " ++ Solutions.Day18.puzzle2 day18Input ++ " (Verified: X)"
+    day19Input <- readDay "19"
+    putStrLn $ "Day 19 Puzzle 1: " ++ Solutions.Day19.puzzle1 day19Input ++ " (Verified: 446935)"
+    putStrLn $ "Day 19 Puzzle 2: " ++ Solutions.Day19.puzzle2 day19Input ++ " (Verified: 141882534122898)"
 
 readDay :: String -> IO ([String])
 readDay day = do

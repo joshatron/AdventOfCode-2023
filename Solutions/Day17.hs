@@ -18,7 +18,7 @@ puzzle1 = show . currentHeatLoss . findShortestPath . parseHeatMap
 
 findShortestPath :: HeatMap -> SearchNode
 findShortestPath heatMap = aStarSearch heatMap (Point ((width heatMap)-1) ((height heatMap)-1)) (Heap.singleton (0, SearchNode (Point 0 0) 0 East 0 [])) Set.empty
---findShortestPath heatMap = aStarSearch heatMap (Point 80 10) (Heap.singleton (0, SearchNode (Point 0 0) 0 East 0 [])) Set.empty
+--findShortestPath heatMap = aStarSearch heatMap (Point 40 40) (Heap.singleton (0, SearchNode (Point 0 0) 0 East 0 [])) Set.empty
 
 aStarSearch :: HeatMap -> Point -> OpenList -> CloseList -> SearchNode
 aStarSearch heatMap destination openList closeList
